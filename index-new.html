@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TextEditBench: Evaluating Reasoning-aware Text Editing</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #ffffff;
+            color: #4a4a4a;
+        }
+
+        /* ------------------- 顶部 Hero 区域 ------------------- */
+        .title.is-1 {
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .publication-authors {
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .publication-venue {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .button.is-rounded {
+            border-radius: 30px;
+            padding: 0 20px;
+        }
+
+        /* ------------------- 数据仪表盘 (Stats) ------------------- */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3273dc;
+            font-family: 'Google Sans';
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ------------------- 排行榜 (Leaderboard) ------------------- */
+        .tabs.is-toggle li.is-active a {
+            background-color: #3273dc;
+            border-color: #3273dc;
+            color: #fff;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-table th {
+            background-color: #fff;
+            border-bottom: 2px solid #dbdbdb;
+            padding: 12px;
+            text-align: center;
+            vertical-align: middle;
+            position: sticky;
+            top: 0;
+        }
+
+        .leaderboard-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        /* 分数条样式 */
+        .score-bar-container {
+            width: 60px;
+            height: 6px;
+            background: #eee;
+            margin: 5px auto 0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-bar {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .bar-blue {
+            background: #4dabf7;
+        }
+
+        .bar-red {
+            background: #ff6b6b;
+        }
+
+        .bar-green {
+            background: #51cf66;
+        }
+
+        /* 冠军行高亮 */
+        .row-winner {
+            background-color: #f0f8ff;
+            font-weight: bold;
+            border-left: 4px solid #3273dc;
+        }
+
+        .rank-icon {
+            margin-right: 5px;
+            color: #ffc107;
+        }
+
+        /* ------------------- 轮播图 (Carousel) ------------------- */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .carousel-btn:hover {
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .prev-btn {
+            left: 15px;
+        }
+
+        .next-btn {
+            right: 15px;
+        }
+
+        /* 通用容器 */
+        .container.is-max-desktop {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Google Sans';
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            text-align: center;
+        }
+
+        .content p {
+            text-align: justify;
+        }
+
+        /* 隐藏/显示 Tab 内容 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.is-active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop has-text-centered">
+
+                <h1 class="title is-1">
+                    TextEditBench: Evaluating Reasoning-aware<br>Text Editing Beyond Rendering
+                </h1>
+
+                <div class="publication-authors">
+                    <span class="author-block">
+                        <a href="#">Anonymous Authors</a><sup>*</sup>
+                    </span>
+                </div>
+
+                <div class="publication-venue">
+                    <span>Paper ID: 3050 (CVPR 2026 Submission)</span>
+                </div>
+
+                <div class="buttons is-centered">
+                    <a href="#" class="button is-dark is-rounded">
+                        <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                        <span>Paper</span>
+                    </a>
+                    <a href="#" class="button is-dark is-rounded">
+                        <span class="icon"><i class="fab fa-github"></i></span>
+                        <span>Code</span>
+                    </a>
+                    <a href="#" class="button is-dark is-rounded">
+                        <span class="icon"><i class="far fa-images"></i></span>
+                        <span>Data (1.2k)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <img src="images/overview_01.jpg" alt="Overview" style="width: 100%; border-radius: 10px;">
+            <h2 class="subtitle has-text-centered is-size-6 has-text-grey" style="margin-top:15px;">
+                Figure 1: TextEditBench covers diverse reasoning-intensive text editing scenarios.
+            </h2>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">14</div>
+                    <div class="stat-label">Topics</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1,196</div>
+                    <div class="stat-label">Instances</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">GPT-4o</div>
+                    <div class="stat-label">Evaluator</div>
+                </div>
+            </div>
+
+            <div class="columns is-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3 has-text-centered">Abstract</h2>
+                    <div class="content box" style="background-color: #f5f5f5;">
+                        <p>
+                            Text rendering has recently emerged as one of the most challenging frontiers in visual
+                            generation. However, text editing within images remains largely unexplored. We introduce
+                            <strong>TextEditBench</strong>, a comprehensive benchmark emphasizing
+                            <strong>reasoning-intensive editing</strong> scenarios.
+                        </p>
+                        <p>
+                            Unlike traditional benchmarks, we propose a <strong>Dual-Track Evaluation Framework</strong>
+                            combining pixel-level objective metrics with MLLM-based semantic expectations (SE). Our
+                            experiments demonstrate that current SOTA models still struggle with tasks requiring
+                            multi-step reasoning and contextual understanding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">🏆 Leaderboard</h2>
+
+            <div class="tabs is-toggle is-fullwidth is-centered is-large">
+                <ul>
+                    <li class="is-active" onclick="openTab(event, 'Objective')">
+                        <a>
+                            <span class="icon is-small"><i class="fas fa-chart-bar"></i></span>
+                            <span>Objective Metrics (Pixel)</span>
+                        </a>
+                    </li>
+                    <li onclick="openTab(event, 'Semantic')">
+                        <a>
+                            <span class="icon is-small"><i class="fas fa-brain"></i></span>
+                            <span>Semantic Metrics (GPT-4o)</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="Objective" class="tab-content is-active">
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Model</th>
+                                <th>SSIM↑</th>
+                                <th>PSNR↑</th>
+                                <th>LPIPS↓</th>
+                                <th>MSE↓</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-winner">
+                                <td style="text-align: left;"><i class="fas fa-trophy rank-icon"></i>NanoBanana</td>
+                                <td>0.904 <div class="score-bar-container">
+                                        <div class="score-bar bar-blue" style="width: 90%;"></div>
+                                    </div>
+                                </td>
+                                <td>29.88 <div class="score-bar-container">
+                                        <div class="score-bar bar-green" style="width: 85%;"></div>
+                                    </div>
+                                </td>
+                                <td>0.036 <div class="score-bar-container">
+                                        <div class="score-bar bar-red" style="width: 10%;"></div>
+                                    </div>
+                                </td>
+                                <td>160.3</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;">Qwen-Image-Edit</td>
+                                <td>0.901 <div class="score-bar-container">
+                                        <div class="score-bar bar-blue" style="width: 89%;"></div>
+                                    </div>
+                                </td>
+                                <td>28.22 <div class="score-bar-container">
+                                        <div class="score-bar bar-green" style="width: 80%;"></div>
+                                    </div>
+                                </td>
+                                <td>0.039 <div class="score-bar-container">
+                                        <div class="score-bar bar-red" style="width: 12%;"></div>
+                                    </div>
+                                </td>
+                                <td>278.5</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;">Step1X-Edit</td>
+                                <td>0.879 <div class="score-bar-container">
+                                        <div class="score-bar bar-blue" style="width: 80%;"></div>
+                                    </div>
+                                </td>
+                                <td>25.52 <div class="score-bar-container">
+                                        <div class="score-bar bar-green" style="width: 70%;"></div>
+                                    </div>
+                                </td>
+                                <td>0.089 <div class="score-bar-container">
+                                        <div class="score-bar bar-red" style="width: 30%;"></div>
+                                    </div>
+                                </td>
+                                <td>982.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="Semantic" class="tab-content">
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Model</th>
+                                <th>Instruct Follow.</th>
+                                <th>Text Accuracy</th>
+                                <th>Semantic Exp.</th>
+                                <th>Overall Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-winner">
+                                <td style="text-align: left;"><i class="fas fa-trophy rank-icon"></i>Qwen-Image-Edit
+                                </td>
+                                <td>2.91</td>
+                                <td>3.23</td>
+                                <td>2.45</td>
+                                <td><span class="tag is-danger is-light is-medium">16.58</span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;">NanoBanana</td>
+                                <td>2.90</td>
+                                <td>3.25</td>
+                                <td>2.53</td>
+                                <td><span class="tag is-info is-light is-medium">16.54</span></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;">FLUX.1-Kontext</td>
+                                <td>1.85</td>
+                                <td>2.15</td>
+                                <td>1.40</td>
+                                <td>12.42</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;">OmniGen2</td>
+                                <td>1.12</td>
+                                <td>1.74</td>
+                                <td>0.86</td>
+                                <td>8.52</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h2 class="section-title">🖼️ Reasoning-Aware Examples</h2>
+
+            <div class="carousel-container">
+                <button class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+
+                <div class="carousel-track">
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/960x500/e0e0e0/808080?text=Example+1:+Discount+Calculation"
+                            alt="Example 1" style="width:100%; display:block;">
+                        <div class="carousel-caption">
+                            <strong>Math Reasoning:</strong> Calculating 20% off from the original price tag.
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/960x500/d0d0d0/808080?text=Example+2:+Date+Adjustment"
+                            alt="Example 2" style="width:100%; display:block;">
+                        <div class="carousel-caption">
+                            <strong>Temporal Reasoning:</strong> Changing the calendar date to "next Friday".
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="https://via.placeholder.com/960x500/c0c0c0/808080?text=Example+3:+Translation"
+                            alt="Example 3" style="width:100%; display:block;">
+                        <div class="carousel-caption">
+                            <strong>Translation:</strong> Translating street signs while keeping the style.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="BibTeX">
+        <div class="container is-max-desktop content">
+            <h2 class="title is-4">BibTeX</h2>
+            <div style="position: relative;">
+                <button class="button is-small is-light" style="position: absolute; right: 10px; top: 10px;"
+                    onclick="copyBibtex()">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+                <pre><code id="bibtex-text">@article{texteditbench2026,
+  title={TextEditBench: Evaluating Reasoning-aware Text Editing Beyond Rendering},
+  author={Anonymous Authors},
+  journal={CVPR Submission},
+  volume={3050},
+  year={2026}
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="content has-text-centered">
+                <p class="is-size-7">
+                    Page template adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Tab 切换逻辑
+        function openTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("tab-content");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+                x[i].classList.remove("is-active");
+            }
+            tablinks = document.querySelectorAll(".tabs li");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("is-active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("is-active");
+            evt.currentTarget.classList.add("is-active");
+        }
+
+        // 2. 轮播图逻辑
+        const track = document.querySelector('.carousel-track');
+        const slides = Array.from(track.children);
+        const nextButton = document.querySelector('.next-btn');
+        const prevButton = document.querySelector('.prev-btn');
+        let currentSlideIndex = 0;
+
+        function updateSlidePosition() {
+            const width = slides[0].getBoundingClientRect().width;
+            track.style.transform = 'translateX(-' + (width * currentSlideIndex) + 'px)';
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            updateSlidePosition();
+        });
+
+        prevButton.addEventListener('click', () => {
+            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+            updateSlidePosition();
+        });
+
+        // 窗口大小改变时重置位置
+        window.addEventListener('resize', updateSlidePosition);
+
+        // 3. 复制 BibTeX
+        function copyBibtex() {
+            const text = document.getElementById('bibtex-text').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('BibTeX copied to clipboard!');
+            });
+        }
+    </script>
+
+</body>
+
+</html>

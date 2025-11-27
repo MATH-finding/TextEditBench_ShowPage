@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="TextEditBench: Evaluating Reasoning-aware Text Editing Beyond Rendering">
+  <meta name="keywords" content="Text Editing, Multimodal, Benchmark, Reasoning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TextEditBench: Evaluating Reasoning-aware Text Editing Beyond Rendering</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; background-color: #ffffff; }
+    
+    /* 标题区域 */
+    .title.is-1 { font-family: 'Google Sans', sans-serif; font-weight: 700; font-size: 2.5rem; margin-bottom: 20px; }
+    .publication-authors { font-size: 1.25rem; color: #222; margin-bottom: 10px; }
+    .publication-venue { font-weight: bold; color: #555; margin-bottom: 20px; }
+    
+    /* 徽章按钮 */
+    .link-block a { margin: 5px; }
+    .button.is-rounded { border-radius: 30px; padding-left: 20px; padding-right: 20px; }
+    .button.is-dark { background-color: #363636; color: white; border: none; }
+    
+    /* 摘要与容器 */
+    .container.is-max-desktop { max-width: 960px; margin: 0 auto; }
+    .abstract-box { background-color: #f5f5f5; border-radius: 10px; padding: 2rem; margin-top: 20px; text-align: justify; }
+    
+    /* 图片占位符 */
+    .image-container { text-align: center; margin: 20px 0; }
+    .image-caption { font-size: 0.9rem; color: #666; margin-top: 10px; font-style: italic; }
+    
+    /* 表格样式 (Leaderboard) */
+    .table-container { overflow-x: auto; margin-top: 20px; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    table.leaderboard { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    table.leaderboard th { background-color: #f8f9fa; border-bottom: 2px solid #dbdbdb; padding: 12px; text-align: center; vertical-align: middle; }
+    table.leaderboard td { border-bottom: 1px solid #eee; padding: 10px; text-align: center; vertical-align: middle; }
+    table.leaderboard tr:nth-child(even) { background-color: #fafafa; }
+    table.leaderboard tr:hover { background-color: #f0f8ff; }
+    .best-score { font-weight: bold; color: #d32f2f; }
+    .second-score { font-weight: bold; color: #1976d2; }
+    .metric-header { font-size: 0.8rem; color: #666; }
+
+    /* 章节标题 */
+    .section-title { font-family: 'Google Sans'; font-weight: 600; font-size: 1.8rem; margin-top: 3rem; margin-bottom: 1.5rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      
+      <h1 class="title is-1">
+        TextEditBench: Evaluating Reasoning-aware<br>Text Editing Beyond Rendering
+      </h1>
+      
+      <div class="publication-authors">
+        <span class="author-block">
+          <a href="#">Anonymous Authors</a><sup>*</sup>
+        </span>
+      </div>
+
+      <div class="publication-venue">
+        <span>Paper ID: 3050 (CVPR 2026 Submission)</span>
+      </div>
+
+      <div class="publication-links">
+        <span class="link-block">
+          <a href="#" class="button is-dark is-rounded">
+            <span class="icon"><i class="fas fa-file-pdf"></i></span>
+            <span>Paper</span>
+          </a>
+        </span>
+        <span class="link-block">
+          <a href="#" class="button is-dark is-rounded">
+            <span class="icon"><i class="fab fa-github"></i></span>
+            <span>Code</span>
+          </a>
+        </span>
+        <span class="link-block">
+          <a href="#" class="button is-dark is-rounded">
+            <span class="icon"><i class="far fa-images"></i></span>
+            <span>Data (HuggingFace)</span>
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="image-container">
+      <img src="images/overview_01.jpg" alt="TextEditBench Overview" style="width: 100%; border-radius: 10px;">
+      <p class="image-caption">
+        Figure 1: Overview of TextEditBench. Covering diverse text-in-image editing types such as translation, replacement, scaling, and creation.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="abstract-box content">
+          <p>
+            Text rendering has recently emerged as one of the most challenging frontiers in visual generation. However, text editing within images remains largely unexplored, as it requires generating legible characters while preserving semantic, geometric, and contextual coherence.
+          </p>
+          <p>
+            To fill this gap, we introduce <strong>TextEditBench</strong>, a comprehensive evaluation benchmark that explicitly focuses on text-centric regions in images. Beyond basic pixel manipulations, our benchmark emphasizes <strong>reasoning-intensive editing scenarios</strong> that require models to understand physical plausibility, linguistic meaning, and cross-modal dependencies.
+          </p>
+          <p>
+            We further propose a novel evaluation dimension, <strong>Semantic Expectation (SE)</strong>, which measures the reasoning ability of models to maintain semantic consistency. TextEditBench covers 14 topics, 6 task types, and 12 fine-grained sub-tasks with 1,196 annotated instances.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop has-text-centered">
+    <h2 class="section-title">Evaluation Framework</h2>
+    <div class="content has-text-justified">
+      <p>
+        Evaluating text-in-image editing requires assessing both low-level visual fidelity and high-level semantic coherence. TextEditBench employs a <strong>Dual-Track Evaluation Framework</strong>:
+      </p>
+      <ul>
+        <li><strong>Pixel-Level Objective Metrics:</strong> Script-based evaluation using SSIM, PSNR, MSE, and LPIPS to measure background preservation fidelity.</li>
+        <li><strong>MLLM-based Semantic Metrics:</strong> Leveraging GPT-4o to evaluate Instruction Following (IF), Text Accuracy (TA), Visual Consistency (VC), Layout Preservation (LP), and the novel Semantic Expectation (SE).</li>
+      </ul>
+    </div>
+    
+    <div class="image-container">
+       <img src="https://via.placeholder.com/800x300?text=Place+Figure+4+(Evaluation+Pipeline)+Here" width="80%">
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title">🏆 Leaderboard</h2>
+
+
+<div class="notification is-warning is-light">
+  <small>Note: Table 3 (Objective) and Table 4 (Semantic) combined below. "Syn" = Synthetic Data, "Real" = Real-World Data.</small>
+</div>
+
+<h3 class="title is-4 has-text-centered" style="margin-top: 30px;">Script-based Evaluation (Pixel Consistency)</h3>
+<div class="table-container">
+  <table class="leaderboard">
+    <thead>
+      <tr>
+        <th rowspan="2">Model</th>
+        <th colspan="4">Synthetic Dataset</th>
+        <th colspan="4">Real-World Dataset</th>
+      </tr>
+      <tr>
+        <th class="metric-header">SSIM↑</th>
+        <th class="metric-header">LPIPS↓</th>
+        <th class="metric-header">PSNR↑</th>
+        <th class="metric-header">MSE↓</th>
+        <th class="metric-header">SSIM↑</th>
+        <th class="metric-header">LPIPS↓</th>
+        <th class="metric-header">PSNR↑</th>
+        <th class="metric-header">MSE↓</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align: left;">Step1X-Edit</td>
+        <td>0.879</td><td>0.089</td><td>25.52</td><td>982.5</td>
+        <td>0.872</td><td>0.091</td><td>27.17</td><td>997.9</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">MagicBrush</td>
+        <td>0.788</td><td>0.162</td><td>19.29</td><td>3456.7</td>
+        <td>0.746</td><td>0.186</td><td>19.72</td><td>3646.2</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">InstructPix2Pix</td>
+        <td>0.768</td><td>0.187</td><td>17.77</td><td>2718.5</td>
+        <td>0.725</td><td>0.245</td><td>16.94</td><td>3601.6</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">OmniGen2</td>
+        <td>0.836</td><td>0.129</td><td>21.38</td><td>2046.6</td>
+        <td>0.818</td><td>0.140</td><td>22.73</td><td>2039.8</td>
+      </tr>
+      <tr style="background-color: #e3f2fd; font-weight: bold;">
+        <td style="text-align: left;">NanoBanana (Ours?)</td>
+        <td>0.904</td><td>0.036</td><td>29.88</td><td>160.3</td>
+        <td>0.888</td><td>0.043</td><td>31.48</td><td>175.5</td>
+      </tr>
+      <tr>
+         <td style="text-align: left;">Qwen-Image-Edit</td>
+         <td>0.901</td><td>0.039</td><td>28.22</td><td>278.5</td>
+         <td>0.887</td><td>0.045</td><td>30.02</td><td>228.4</td>
+      </tr>
+      </tbody>
+  </table>
+</div>
+
+<h3 class="title is-4 has-text-centered" style="margin-top: 50px;">GPT-4o Assisted Semantic Evaluation (Reasoning)</h3>
+<div class="table-container">
+  <table class="leaderboard">
+    <thead>
+      <tr>
+        <th rowspan="2">Model</th>
+        <th colspan="3">Synthetic (Score /5)</th>
+        <th rowspan="2">Overall<br>(/25)</th>
+        <th colspan="3">Real-World (Score /5)</th>
+        <th rowspan="2">Overall<br>(/25)</th>
+      </tr>
+      <tr>
+        <th class="metric-header">Inst. Follow</th>
+        <th class="metric-header">Text Acc</th>
+        <th class="metric-header">Sem. Expect</th>
+        <th class="metric-header">Inst. Follow</th>
+        <th class="metric-header">Text Acc</th>
+        <th class="metric-header">Sem. Expect</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align: left;">Step1X-Edit</td>
+        <td>1.40</td><td>1.44</td><td>1.14</td><td>9.26</td>
+        <td>1.96</td><td>2.11</td><td>1.08</td><td>12.02</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">MagicBrush</td>
+        <td>0.73</td><td>0.73</td><td>0.62</td><td>3.86</td>
+        <td>0.59</td><td>0.80</td><td>0.67</td><td>4.12</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">OmniGen2</td>
+        <td>1.12</td><td>1.74</td><td>0.86</td><td>8.52</td>
+        <td>1.67</td><td>2.22</td><td>1.02</td><td>10.99</td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">FLUX.1-Kontext</td>
+        <td>1.85</td><td>2.15</td><td>1.40</td><td>12.42</td>
+        <td>2.53</td><td>2.94</td><td>1.23</td><td>14.93</td>
+      </tr>
+      <tr style="background-color: #fff3e0; font-weight: bold;">
+        <td style="text-align: left;">Qwen-Image-Edit</td>
+        <td>2.91</td><td>3.23</td><td>2.45</td><td style="color:#d32f2f;">16.58</td>
+        <td>3.50</td><td>3.83</td><td>2.47</td><td style="color:#d32f2f;">18.70</td>
+      </tr>
+      <tr>
+         <td style="text-align: left;">NanoBanana</td>
+         <td>2.90</td><td>3.25</td><td>2.53</td><td>16.54</td>
+         <td>3.18</td><td>3.60</td><td>2.73</td><td>18.22</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="section-title">Reasoning-Aware Editing Examples</h2>
+    <div class="content">
+      <p>
+        To succeed in TextEditBench, models must perform multi-step reasoning. Below are examples where the model must interpret visual cues (e.g., calculating a 20% discount or postponing a date) before rendering text.
+      </p>
+    </div>
+    <div class="image-container">
+      <img src="https://via.placeholder.com/900x500?text=Place+Figure+6+(Chain+of+Thought+Examples)+Here" alt="Reasoning Examples" style="width: 100%; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <p class="image-caption">Figure 6: Multi-step reasoning examples (e.g., Discount Calculation, Date Adjustment).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{texteditbench2026,
+  title={TextEditBench: Evaluating Reasoning-aware Text Editing Beyond Rendering},
+  author={Anonymous Authors},
+  journal={CVPR Submission},
+  volume={3050},
+  year={2026}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        The website template is borrowed from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
